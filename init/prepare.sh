@@ -80,6 +80,11 @@ fi
 cd $OONIB_PATH
 $PYTHON_EXE setup.py install
 
+# install mlab-ns-simulator and its dependencies:
+MLABSIM_SOURCE=$SOURCE_DIR/mlab-ns-simulator
+$BUILD_DIR/bin/pip install --requirement $MLABSIM_SOURCE/requirements.txt --use-mirrors || exit 1
+$BUILD_DIR/bin/pip install $MLABSIM_SOURCE
+
 # build a static tor
 mkdir -p $BUILD_DIR/
 cd $BUILD_DIR
