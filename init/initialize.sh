@@ -82,6 +82,17 @@ nettest:
 " > $DATA_DIR/policy.yaml
 chown $SLICENAME:slices $DATA_DIR/policy.yaml
 
+BOUNCER_FILE='Null'
+
+if [ `hostname` = "$BOUNCER_HOST" ]; then
+    # Enable the bouncer:
+    BOUNCER_FILE="$DATA_DIR/bouncer.yaml"
+
+    # And update the bouncer config from cron on an hourly schedule:
+    sudo ln -s /home/mlab_ooni/bin/update-bouncer.sh /etc/cron.hourly/50_update_ooni_bouncer_from_mlab_ns.sh
+fi
+
+
 # drop a config in $SLICEHOME
 echo "
 main:
@@ -91,7 +102,7 @@ main:
     deck_dir: '$DECK_DIR'
 
     policy_file: '$DATA_DIR/policy.yaml'
-    bouncer_file: Null
+    bouncer_file: '$BOUNCER_FILE'
 
     tor_datadir: '$TOR_DIR'
     tor_binary: '$SLICEHOME/bin/tor'
@@ -145,11 +156,3 @@ helpers:
         port: 443" > $SLICEHOME/oonib.conf
 
 chown $SLICENAME:slices $SLICEHOME/oonib.conf
-
-
-if [ `hostname` = "$BOUNCER_HOST" ]; then
-    # NOTE: This does not actually enable the bouncer itself.  Do that
-    # manually for now.
-
-    sudo ln -s /home/mlab_ooni/bin/update-bouncer.sh /etc/cron.hourly/50_update_ooni_bouncer_from_mlab_ns.sh
-fi
